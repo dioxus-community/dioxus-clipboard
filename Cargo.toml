@@ -1,16 +1,19 @@
 [package]
-name = "dioxus-library-template"
-version = "0.2.0"
+name = "dioxus-clipboard"
+version = "0.1.0"
 edition = "2021"
-description = "Library for Dioxus 🧬"
+description = "Clipboard integration for Dioxus 🧬"
 readme = "./README.md"
-homepage = "https://github.com/dioxus-community/dioxus-library-template"
-repository = "https://github.com/dioxus-community/dioxus-library-template"
+license = "MIT"
+authors = ["Marc Espín <mespinsanz@gmail.com>"]
+homepage = "https://github.com/dioxus-community/dioxus-clipboard"
+repository = "https://github.com/dioxus-community/dioxus-clipboard"
 keywords = ["dioxus"]
 categories = ["gui"]
 
 [dependencies]
 dioxus-lib = { version = "0.5", default-features = false, features = ["macro", "hooks"] }
+copypasta = "0.10"
 
 [dev-dependencies]
 dioxus = { version = "0.5", features = ["desktop"]}

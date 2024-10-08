@@ -1,3 +1,3 @@
-mod use_dioxus;
+mod use_clipboard;
 
-pub use use_dioxus::*;
+pub use use_clipboard::*;
