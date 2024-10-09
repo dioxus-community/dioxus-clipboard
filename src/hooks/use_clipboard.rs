@@ -1,6 +1,6 @@
 //! Provides a clipboard abstraction to access the target system's clipboard.
 
-use copypasta::ClipboardContext;
+use copypasta::{ClipboardContext, ClipboardProvider};
 use dioxus_lib::prelude::*;
 
 #[derive(Debug, PartialEq, Clone)]
@@ -11,7 +11,7 @@ pub enum ClipboardError {
 }
 
 /// Handle to access the ClipboardContext.
-/// 
+///
 /// Use it through [use_clipboard].
 #[derive(Clone, Copy, PartialEq)]
 pub struct UseClipboard {
