@@ -857,7 +857,7 @@ checksum = "76ada3c1010b9cf23c2950637fca77d8dfd42aac5276d1a4bbba096799f55270"
 
 [[package]]
 name = "dioxus-clipboard"
-version = "0.2.0"
+version = "0.2.0-alpha.1"
 dependencies = [
  "copypasta",
  "dioxus",
