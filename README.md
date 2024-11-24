@@ -6,5 +6,5 @@ Clipboard integration for [Dioxus 🧬](https://dioxuslabs.com/).
 
 ## Support
 
-- **Dioxus v0.5** 🧬
+- **Dioxus v0.6** 🧬
 - Native renderers ([desktop](https://dioxuslabs.com/learn/0.5/getting_started/desktop) and [freya](https://github.com/marc2332/freya))

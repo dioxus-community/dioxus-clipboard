@@ -57,7 +57,7 @@ impl UseClipboard {
 ///
 /// // Write to the clipboard
 /// clipboard.set("Hello, Dioxus!".to_string());;
-///  
+///
 /// ```
 pub fn use_clipboard() -> UseClipboard {
     let clipboard = match try_consume_context() {
