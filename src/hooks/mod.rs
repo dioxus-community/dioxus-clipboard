@@ -1,5 +1,9 @@
 mod use_clipboard;
-mod use_clipboard_wasm;
-
 pub use use_clipboard::*;
-pub use use_clipboard_wasm::*;
+
+
+#[cfg(feature = "wasm")]
+mod clipboard_wasm;
+
+#[cfg(feature = "wasm")]
+pub use clipboard_wasm::*;

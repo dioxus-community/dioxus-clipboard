@@ -29,12 +29,12 @@ impl ClipboardWasm {
     }
 
     // Write to the clipboard
-    pub async fn set(&mut self, contents: String) -> Result<(), ClipboardError> {
+    pub async fn set(&mut self, contents: impl Into<String>) -> Result<(), ClipboardError> {
         wasm_bindgen_futures::JsFuture::from(
             self.clipboard
                 .as_mut()
                 .ok_or(ClipboardError::FailedToSet)?
-                .write_text(&contents),
+                .write_text(&contents.into()),
         )
         .await
         .as_mut()
