@@ -15,5 +15,8 @@ categories = ["gui"]
 dioxus-lib = { version = "0.6.0", default-features = false, features = ["macro", "hooks", "signals"] }
 copypasta = "0.10"
 
+web-sys = { version = "0.3.77", default-features = false, features = ["Clipboard", "Window", "Navigator", "Permissions"] }
+wasm-bindgen-futures = "0.4.50"
+
 [dev-dependencies]
 dioxus = { version = "0.6.0", features = ["desktop"]}
