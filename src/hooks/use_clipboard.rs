@@ -3,6 +3,8 @@
 use copypasta::{ClipboardContext, ClipboardProvider};
 use dioxus_lib::prelude::*;
 
+use super::UseClipboardWasm;
+
 #[derive(Debug, PartialEq, Clone)]
 pub enum ClipboardError {
     FailedToRead,
@@ -59,14 +61,31 @@ impl UseClipboard {
 /// clipboard.set("Hello, Dioxus!".to_string());;
 ///
 /// ```
+#[cfg(not(target_arch = "wasm32"))]
 pub fn use_clipboard() -> UseClipboard {
     let clipboard = match try_consume_context() {
         Some(rt) => rt,
         None => {
+            let clipboard = ClipboardContext::new().ok();
             let clipboard_signal =
-                Signal::new_in_scope(ClipboardContext::new().ok(), ScopeId::ROOT);
+                Signal::new_in_scope(clipboard, ScopeId::ROOT);
             provide_root_context(clipboard_signal)
         }
     };
     UseClipboard { clipboard }
 }
+
+#[cfg(target_arch = "wasm32")]
+pub fn use_clipboard() -> UseClipboardWasm {
+    let clipboard = match try_consume_context() {
+        Some(rt) => rt,
+        None => {
+            let clipboard = ::web_sys::window().map(|w| w.navigator().clipboard()); 
+            let clipboard_signal =
+                Signal::new_in_scope(clipboard, ScopeId::ROOT);
+            provide_root_context(clipboard_signal)
+        }
+    };
+    UseClipboardWasm { clipboard }
+}
+
