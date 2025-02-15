@@ -3,6 +3,10 @@
 use copypasta::{ClipboardContext, ClipboardProvider};
 use dioxus_lib::prelude::*;
 
+#[cfg(target_arch = "wasm32")]
+use super::use_clipboard_wasm::UseClipboardWasm;
+use super::use_clipboard_kind::UseClipboard;
+
 #[derive(Debug, PartialEq, Clone)]
 pub enum ClipboardError {
     FailedToRead,
@@ -14,11 +18,16 @@ pub enum ClipboardError {
 ///
 /// Use it through [use_clipboard].
 #[derive(Clone, Copy, PartialEq)]
-pub struct UseClipboard {
-    clipboard: Signal<Option<ClipboardContext>>,
+pub struct UseClipboardDesktop {
+    pub(crate) clipboard: Signal<Option<ClipboardContext>>,
 }
 
-impl UseClipboard {
+impl UseClipboardDesktop {
+    pub(crate) fn new() -> Self {
+        Self {
+            clipboard: Signal::new_in_scope(ClipboardContext::new().ok(), ScopeId::ROOT),
+        }
+    }
     // Read from the clipboard
     pub fn get(&mut self) -> Result<String, ClipboardError> {
         self.clipboard
@@ -51,22 +60,17 @@ impl UseClipboard {
 /// let mut clipboard = use_clipboard();
 ///
 /// // Read the clipboard content
-/// if let Ok(content) = clipboard.get() {
+/// if let Ok(content) = clipboard.get().await {
 ///     println!("{}", content);
 /// }
 ///
 /// // Write to the clipboard
-/// clipboard.set("Hello, Dioxus!".to_string());;
+/// clipboard.set("Hello, Dioxus!".to_string()).await;;
 ///
 /// ```
 pub fn use_clipboard() -> UseClipboard {
-    let clipboard = match try_consume_context() {
+    match try_consume_context() {
         Some(rt) => rt,
-        None => {
-            let clipboard_signal =
-                Signal::new_in_scope(ClipboardContext::new().ok(), ScopeId::ROOT);
-            provide_root_context(clipboard_signal)
-        }
-    };
-    UseClipboard { clipboard }
+        None => provide_root_context(UseClipboard::new()),
+    }
 }
