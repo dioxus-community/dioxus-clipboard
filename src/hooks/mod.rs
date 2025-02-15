@@ -1,5 +1,7 @@
-mod use_clipboard;
-pub use use_clipboard::*;
+mod use_clipboard_desktop;
+mod use_clipboard_wasm;
+mod use_clipboard_kind;
 
-mod clipboard_wasm;
-pub use clipboard_wasm::*;
+
+
+pub use use_clipboard_desktop::*;

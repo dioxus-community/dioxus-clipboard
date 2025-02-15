@@ -13,12 +13,20 @@ pub struct UseClipboardWasm {
 }
 
 impl UseClipboardWasm {
+    pub(crate) fn new() -> Self {
+        Self {
+            clipboard: Signal::new_in_scope(
+                ::web_sys::window().map(|w| w.navigator().clipboard()),
+                ScopeId::ROOT,
+            ),
+        }
+    }
     // Read from the clipboard
-    pub async fn get(&mut self) -> Result<String, ClipboardError> {
+    pub async fn get(&self) -> Result<String, ClipboardError> {
         wasm_bindgen_futures::JsFuture::from(
             self.clipboard
-                .write()
-                .as_mut()
+                .read()
+                .as_ref()
                 .ok_or(ClipboardError::NotAvailable)?
                 .read_text(),
         )

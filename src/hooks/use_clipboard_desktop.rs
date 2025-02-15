@@ -3,7 +3,9 @@
 use copypasta::{ClipboardContext, ClipboardProvider};
 use dioxus_lib::prelude::*;
 
-use super::UseClipboardWasm;
+#[cfg(target_arch = "wasm32")]
+use super::use_clipboard_wasm::UseClipboardWasm;
+use super::use_clipboard_kind::UseClipboard;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum ClipboardError {
@@ -16,11 +18,16 @@ pub enum ClipboardError {
 ///
 /// Use it through [use_clipboard].
 #[derive(Clone, Copy, PartialEq)]
-pub struct UseClipboard {
-    clipboard: Signal<Option<ClipboardContext>>,
+pub struct UseClipboardDesktop {
+    pub(crate) clipboard: Signal<Option<ClipboardContext>>,
 }
 
-impl UseClipboard {
+impl UseClipboardDesktop {
+    pub(crate) fn new() -> Self {
+        Self {
+            clipboard: Signal::new_in_scope(ClipboardContext::new().ok(), ScopeId::ROOT),
+        }
+    }
     // Read from the clipboard
     pub fn get(&mut self) -> Result<String, ClipboardError> {
         self.clipboard
@@ -53,39 +60,17 @@ impl UseClipboard {
 /// let mut clipboard = use_clipboard();
 ///
 /// // Read the clipboard content
-/// if let Ok(content) = clipboard.get() {
+/// if let Ok(content) = clipboard.get().await {
 ///     println!("{}", content);
 /// }
 ///
 /// // Write to the clipboard
-/// clipboard.set("Hello, Dioxus!".to_string());;
+/// clipboard.set("Hello, Dioxus!".to_string()).await;;
 ///
 /// ```
-#[cfg(not(target_arch = "wasm32"))]
 pub fn use_clipboard() -> UseClipboard {
-    let clipboard = match try_consume_context() {
+    match try_consume_context() {
         Some(rt) => rt,
-        None => {
-            let clipboard = ClipboardContext::new().ok();
-            let clipboard_signal =
-                Signal::new_in_scope(clipboard, ScopeId::ROOT);
-            provide_root_context(clipboard_signal)
-        }
-    };
-    UseClipboard { clipboard }
+        None => provide_root_context(UseClipboard::new()),
+    }
 }
-
-#[cfg(target_arch = "wasm32")]
-pub fn use_clipboard() -> UseClipboardWasm {
-    let clipboard = match try_consume_context() {
-        Some(rt) => rt,
-        None => {
-            let clipboard = ::web_sys::window().map(|w| w.navigator().clipboard()); 
-            let clipboard_signal =
-                Signal::new_in_scope(clipboard, ScopeId::ROOT);
-            provide_root_context(clipboard_signal)
-        }
-    };
-    UseClipboardWasm { clipboard }
-}
-

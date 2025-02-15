@@ -21,6 +21,6 @@ wasm-bindgen-futures = { version = "0.4.50" }
 
 
 [dev-dependencies]
-dioxus = { version = "0.6.0", features = ["desktop"]}
+dioxus = { version = "0.6.0", features = ["desktop"]} 
 
 
