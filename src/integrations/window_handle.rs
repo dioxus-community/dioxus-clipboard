@@ -1,4 +1,4 @@
-use copypasta::{wayland_clipboard, ClipboardContext, ClipboardProvider};
+use copypasta::{ClipboardContext, ClipboardProvider};
 use dioxus_lib::{
     prelude::{provide_root_context, ScopeId},
     signals::Signal,
@@ -13,10 +13,12 @@ use raw_window_handle::RawDisplayHandle;
 pub unsafe fn create_native_clipboard(
     display: RawDisplayHandle,
 ) -> Option<Box<dyn ClipboardProvider>> {
+    #[allow(clippy::match_single_binding)]
     match display {
+        #[cfg(target_os = "linux")]
         RawDisplayHandle::Wayland(d) => {
             let (_primary, clipboard) =
-                wayland_clipboard::create_clipboards_from_external(d.display.as_ptr());
+                copypasta::wayland_clipboard::create_clipboards_from_external(d.display.as_ptr());
             let clipboard: Box<dyn ClipboardProvider> = Box::new(clipboard);
             Some(clipboard)
         }
