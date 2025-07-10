@@ -1,9 +1,11 @@
 use copypasta::{ClipboardContext, ClipboardProvider};
 use dioxus_lib::{
-    prelude::{provide_root_context, ScopeId},
+    prelude::{provide_root_context, try_consume_context, ScopeId},
     signals::Signal,
 };
 use raw_window_handle::RawDisplayHandle;
+
+use crate::hooks::UseClipboard;
 
 /// Create a clipboard from a raw display handle, useful for Wayland.
 ///
@@ -31,6 +33,11 @@ pub unsafe fn create_native_clipboard(
 
 // Register the clipboard in the Root Scope
 pub fn provide_native_clipboard(provider: Box<dyn ClipboardProvider>) {
-    let clipboard_signal = Signal::new_in_scope(provider, ScopeId::ROOT);
-    provide_root_context(clipboard_signal);
+    match try_consume_context::<UseClipboard>() {
+        Some(mut rt) => rt.replace_with(provider),
+        None => {
+            let clipboard_signal = Signal::new_in_scope(provider, ScopeId::ROOT);
+            provide_root_context(clipboard_signal);
+        }
+    };
 }

@@ -38,6 +38,10 @@ impl UseClipboard {
             .set_contents(contents)
             .map_err(|_| ClipboardError::FailedToSet)
     }
+
+    pub(crate) fn replace_with(&mut self, provider: Box<dyn ClipboardProvider>) {
+        self.clipboard.write().replace(provider);
+    }
 }
 
 /// Access the clipboard.
