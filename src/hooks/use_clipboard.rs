@@ -15,7 +15,7 @@ pub enum ClipboardError {
 /// Use it through [use_clipboard].
 #[derive(Clone, Copy, PartialEq)]
 pub struct UseClipboard {
-    clipboard: Signal<Option<ClipboardContext>>,
+    clipboard: Signal<Option<Box<dyn ClipboardProvider>>>,
 }
 
 impl UseClipboard {
@@ -63,8 +63,12 @@ pub fn use_clipboard() -> UseClipboard {
     let clipboard = match try_consume_context() {
         Some(rt) => rt,
         None => {
-            let clipboard_signal =
-                Signal::new_in_scope(ClipboardContext::new().ok(), ScopeId::ROOT);
+            let clipboard: Option<Box<dyn ClipboardProvider>> =
+                ClipboardContext::new().ok().map(|c| {
+                    let clipboard: Box<dyn ClipboardProvider> = Box::new(c);
+                    clipboard
+                });
+            let clipboard_signal = Signal::new_in_scope(clipboard, ScopeId::ROOT);
             provide_root_context(clipboard_signal)
         }
     };
