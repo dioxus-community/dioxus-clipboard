@@ -12,8 +12,8 @@ keywords = ["dioxus"]
 categories = ["gui"]
 
 [dependencies]
-dioxus-lib = { version = "0.6.0", default-features = false, features = ["macro", "hooks", "signals"] }
+dioxus = { version = "0.7.0-alpha.3", default-features = false, features = ["macro", "hooks", "signals"] }
 copypasta = "0.10"
 
 [dev-dependencies]
-dioxus = { version = "0.6.0", features = ["desktop"]}
+dioxus = { version = "0.7.0-alpha.3", features = ["desktop"]}
