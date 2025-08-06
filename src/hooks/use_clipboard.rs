@@ -3,7 +3,6 @@
 #[cfg(all(feature = "copypasta", not(feature = "wasm")))]
 use copypasta::{ClipboardContext, ClipboardProvider};
 
-
 #[cfg(feature = "wasm")]
 use web_sys::window;
 
@@ -15,7 +14,6 @@ pub enum ClipboardError {
     FailedToSet,
     NotAvailable,
 }
-
 
 // Internal implementations - made pub(crate) to avoid private interface warnings
 #[cfg(all(feature = "copypasta", not(feature = "wasm")))]
@@ -42,10 +40,10 @@ pub(crate) struct WasmClipboardAsync;
 pub enum UseClipboard {
     #[cfg(all(feature = "copypasta", not(feature = "wasm")))]
     Native(NativeClipboard),
-    
+
     #[cfg(all(feature = "wasm", not(feature = "async")))]
     WasmSync(WasmClipboardSync),
-    
+
     #[cfg(all(feature = "wasm", feature = "async"))]
     WasmAsync(WasmClipboardAsync),
 }
@@ -120,7 +118,7 @@ impl UseClipboard {
         match self {
             #[cfg(all(feature = "copypasta", not(feature = "wasm")))]
             UseClipboard::Native(clipboard) => clipboard.get(),
-            
+
             #[cfg(all(feature = "wasm", not(feature = "async")))]
             UseClipboard::WasmSync(clipboard) => clipboard.get(),
         }
@@ -130,14 +128,14 @@ impl UseClipboard {
         match self {
             #[cfg(all(feature = "copypasta", not(feature = "wasm")))]
             UseClipboard::Native(clipboard) => clipboard.set(contents),
-            
+
             #[cfg(all(feature = "wasm", not(feature = "async")))]
             UseClipboard::WasmSync(clipboard) => clipboard.set(contents),
         }
     }
 }
 
-// Public API - Async implementations  
+// Public API - Async implementations
 #[cfg(feature = "async")]
 impl UseClipboard {
     pub async fn get(&mut self) -> Result<String, ClipboardError> {
@@ -145,14 +143,15 @@ impl UseClipboard {
             #[cfg(all(feature = "copypasta", not(feature = "wasm")))]
             UseClipboard::Native(clipboard) => {
                 // Native async implementation - use sync clipboard directly since copypasta is already fast
-                clipboard.clipboard
+                clipboard
+                    .clipboard
                     .write()
                     .as_mut()
                     .ok_or(ClipboardError::NotAvailable)?
                     .get_contents()
                     .map_err(|_| ClipboardError::FailedToRead)
             }
-            
+
             #[cfg(all(feature = "wasm", feature = "async"))]
             UseClipboard::WasmAsync(clipboard) => clipboard.get().await,
         }
@@ -161,15 +160,14 @@ impl UseClipboard {
     pub async fn set(&mut self, contents: String) -> Result<(), ClipboardError> {
         match self {
             #[cfg(all(feature = "copypasta", not(feature = "wasm")))]
-            UseClipboard::Native(clipboard) => {
-                clipboard.clipboard
-                    .write()
-                    .as_mut()
-                    .ok_or(ClipboardError::NotAvailable)?
-                    .set_contents(contents)
-                    .map_err(|_| ClipboardError::FailedToSet)
-            }
-            
+            UseClipboard::Native(clipboard) => clipboard
+                .clipboard
+                .write()
+                .as_mut()
+                .ok_or(ClipboardError::NotAvailable)?
+                .set_contents(contents)
+                .map_err(|_| ClipboardError::FailedToSet),
+
             #[cfg(all(feature = "wasm", feature = "async"))]
             UseClipboard::WasmAsync(clipboard) => clipboard.set(contents).await,
         }
@@ -231,8 +229,11 @@ pub fn use_clipboard() -> UseClipboard {
             // Native implementation (default and async native)
             #[cfg(all(feature = "copypasta", not(feature = "wasm")))]
             {
-                let clipboard_signal = Signal::new_in_scope(ClipboardContext::new().ok(), ScopeId::ROOT);
-                let clipboard = UseClipboard::Native(NativeClipboard { clipboard: clipboard_signal });
+                let clipboard_signal =
+                    Signal::new_in_scope(ClipboardContext::new().ok(), ScopeId::ROOT);
+                let clipboard = UseClipboard::Native(NativeClipboard {
+                    clipboard: clipboard_signal,
+                });
                 provide_root_context(clipboard)
             }
 
@@ -240,7 +241,9 @@ pub fn use_clipboard() -> UseClipboard {
             #[cfg(all(feature = "wasm", not(feature = "async")))]
             {
                 let cache_signal = Signal::new_in_scope(None, ScopeId::ROOT);
-                let clipboard = UseClipboard::WasmSync(WasmClipboardSync { clipboard_cache: cache_signal });
+                let clipboard = UseClipboard::WasmSync(WasmClipboardSync {
+                    clipboard_cache: cache_signal,
+                });
                 provide_root_context(clipboard)
             }
 
