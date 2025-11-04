@@ -1,6 +1,6 @@
 [package]
 name = "dioxus-clipboard"
-version = "0.3.0-rc.0"
+version = "0.3.0"
 edition = "2021"
 description = "Clipboard integration for Dioxus 🧬"
 readme = "./README.md"
