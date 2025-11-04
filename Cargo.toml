@@ -1,6 +1,6 @@
 [package]
 name = "dioxus-clipboard"
-version = "0.3.0-rc.0"
+version = "0.3.0"
 edition = "2021"
 description = "Clipboard integration for Dioxus 🧬"
 readme = "./README.md"
@@ -12,8 +12,8 @@ keywords = ["dioxus"]
 categories = ["gui"]
 
 [dependencies]
-dioxus = { version = "0.7.0-rc.0", default-features = false, features = ["macro", "hooks", "signals"] }
+dioxus = { version = "0.7.0", default-features = false, features = ["macro", "hooks", "signals"] }
 copypasta = "0.10"
 
 [dev-dependencies]
-dioxus = { version = "0.7.0-rc.0", features = ["desktop"] }
+dioxus = { version = "0.7.0", features = ["desktop"]}
